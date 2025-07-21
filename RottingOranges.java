@@ -79,3 +79,59 @@ class Solution {
         return fresh == 0 ? time : -1; // Return -1 if some fresh oranges remain
     }
 }
+
+
+
+
+
+
+
+
+
+//more efficient
+
+
+
+
+
+class Solution {
+    public int orangesRotting(int[][] grid) {
+        int rows = grid.length, cols = grid[0].length;
+        Queue<int[]> queue = new LinkedList<>();
+        int fresh = 0;
+
+        // Step 1: Count fresh oranges and add rotten oranges to queue
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (grid[i][j] == 2) {
+                    queue.offer(new int[]{i, j, 0}); // {x, y, time}
+                } else if (grid[i][j] == 1) {
+                    fresh++;
+                }
+            }
+        }
+
+        int minutes = 0;
+        int[][] directions = {{0,1},{1,0},{-1,0},{0,-1}};
+
+        // Step 2: BFS to rot adjacent fresh oranges
+        while (!queue.isEmpty()) {
+            int[] curr = queue.poll();
+            int x = curr[0], y = curr[1], time = curr[2];
+            minutes = Math.max(minutes, time);
+
+            for (int[] dir : directions) {
+                int nx = x + dir[0], ny = y + dir[1];
+
+                if (nx >= 0 && ny >= 0 && nx < rows && ny < cols && grid[nx][ny] == 1) {
+                    grid[nx][ny] = 2;  // rot the orange
+                    fresh--;
+                    queue.offer(new int[]{nx, ny, time + 1});
+                }
+            }
+        }
+
+        // Step 3: If fresh oranges remain, return -1
+        return fresh == 0 ? minutes : -1;
+    }
+}
